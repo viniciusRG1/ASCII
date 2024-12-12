@@ -2,11 +2,9 @@ import React, {Component} from "react";
 
 import './Main.css'
 
-import {MdEdit} from 'react-icons/md'
+import Tarefa from "./Tarefas";
 
-import { FaDeleteLeft } from "react-icons/fa6";
-
-import {GoPlus} from 'react-icons/go'
+import Form from './Form';
 
 export default class Main extends Component{
 
@@ -16,6 +14,20 @@ export default class Main extends Component{
     ],
     index: -1,
   };
+
+  componentDidMount(){
+    const tarefa = JSON.parse(localStorage.getItem('tarefa'));
+    if(!tarefa) return;
+
+    this.setState({tarefa});
+  }
+
+  componentDidUpdate(precProps, prevState){
+    const{tarefa} = this.state;
+    if(tarefa === prevState.tarefa)return;
+
+    localStorage.setItem('tarefa', JSON.stringify(tarefa));
+  }
 
   handleEdit = (e, index) => {
     const {tarefa,} = this.state;
@@ -69,32 +81,18 @@ export default class Main extends Component{
     return (
       <div className="main">
         <h1>Lista de Tarefas</h1>
-        <form action="#"
-        className="form"
-        onSubmit={this.handleSubmit}
-        >
-          <input onChange={this.handleChange}
-          type="text"
-          value={novaTarefa}
-          />
-          <button type="submit">
-            <GoPlus />
-            </button>
-        </form>
-        <ul className="tarefas">
-          {tarefa.map((tarefa, index) => (
-            <li key={tarefa}>{tarefa}
-              <span>
-                <MdEdit
-                onClick={(e) => this.handleEdit(e, index)}
-                className="edit" />
-                <FaDeleteLeft
-                onClick={(e) => this.handleDelete(e, index)}
-                className="delete"/>
-              </span>
-            </li>
-          ))}
-        </ul>
+        <Form
+          handleChange={this.handleChange}
+          handleSubmit={this.handleSubmit}
+          novaTarefa={novaTarefa}
+        />
+
+      <Tarefa
+        tarefa={tarefa}
+        handleDelete={this.handleDelete}
+        handleEdit={this.handleEdit}
+      />
+
       </div>
     );
   }
